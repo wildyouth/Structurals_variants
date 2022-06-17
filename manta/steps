@@ -1,0 +1,24 @@
+manta
+run check_file_size to remove failed manta bam
+
+run vcf_gz_list_to_txt.sh
+
+run python3 stage/manta/dico_chr_manta.py /users/gev/kot/stage/manta/all_bam_res/diploidSV_vcf_list.txt /mnt/usb_ext/Noble_GDrive/bam_real/ /users/gev/kot/stage/manta/manta_run_all/ /users/gev/kot/stage/manta/all_bam_res/ &
+
+
+#!/bin/bash
+
+path='/users/gev/kot/stage/manta/manta_run_all/*'
+path_end='/results/variants/diploidSV_inv.vcf'
+
+for folder in $path;
+
+do 
+tabix -p vcf ${folder}${path_end}.gz
+done;
+
+
+
+run_swimmer.sh
+
+graphtyper.sh 25/04/2022 14h11
