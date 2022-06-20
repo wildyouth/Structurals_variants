@@ -10,53 +10,98 @@ Created on Mon Mar 21 15:42:35 2022
 import subprocess
 import sys
 import pathlib
-# If your shell script has shebang, 
-# you can omit shell=True argument.
 
-#g1 = 'WS220'
-#g2 = 'CB4856_2019'
-#path_g1 = '/users/gev/kot/stage/manta/c_elegans.WS220.dna.fa'
-#path_g2 = '/users/gev/kot/stage/mauve/genome/Fasta_genome/genome_assemblies_genome_gb_prjna523481_CB4856_2019_fasta/GCA_004526295.1_ASM452629v1_genomic.fna'
+"""
+Function to run progressiveMauve on 2 genomes reference and target
+with a range of seed_weight (from start to end)
 
-#path_output = '/users/gev/kot/stage/mauve/seed_weed_ws220_cb4856/'
+--seed-weight=<number> Use the specified seed weight for calculating initial anchors
 
-def s_w(start,end, path_g1, path_g2, path_output):
-    #l_r = np.linspace(start,end)
-    for sw in range(start,end):
+arguement : 
+    
+    start : starting value of seed_weight to test
+    end : ending value of seed_weight to test
+    
+    path_ref_gen : path of reference genome
+    
+    path_target_gen : path of target genome
+    
+    path_output : path to save progressiveMauve results
+    
+    path_p_mauve : path of progressiveMauve
+"""
+
+def seed_weight_run(start,end, path_ref_gen, path_target_gen, path_output, path_p_mauve):
+    
+    #Convert start/end to integer for loop for
+    start = int(start)
+    end  = int(end)
+    
+    for sw in range(start, end + 1): #sw = seed_weight
         
+        #concert sw to string for name_output and seed_weight_arg
         sw_value = str(sw)
-        g1 = pathlib.Path(path_g1).stem
-        g2 = pathlib.Path(path_g2).stem
-        name_output = g1 + '_' + g2 + '_sw_' + sw_value
+        
+        #Get name of ref and target genome
+        ref_gen = pathlib.Path(path_ref_gen).stem
+        target_gen = pathlib.Path(path_target_gen).stem
+        
+        #Set up name of file output with ref and target name and seed_weight value tested
+        name_output = ref_gen + '_' + target_gen + '_sw_' + sw_value
+        
+        #seed_weight value tested
+        seed_weight_arg = '--seed-weight=' + sw_value
+        
+        #Output file : wfma, tree and backbone
         output_xmfa = '--output=' + path_output + name_output + '.xmfa' 
         output_tree = '--output-guide-tree=' + path_output + name_output + '.tree' 
         output_backbone = '--backbone-output=' + path_output + name_output + '.backbone' 
         
-        argument = '--seed-weight=' + sw_value + ' ' + output_xmfa + ' ' + output_tree + ' ' + output_backbone  + ' ' + path_g1 + ' ' + path_g2
-    
-        output = subprocess.run(['/export/home1/users/gev/kot/stage/mauve/mauve_snapshot_2015-02-13/linux-x64/progressiveMauve ' + argument], shell=True)
-    
+        #list of all argument to perform progressiveMauve
+        #progressiveMauve --seed_weight=sw --output=xmfa_file --output-guide-tree=guide_tree_file --backbone-output=backbone_file ref_gen target_gen
+        
+        l_arg = [path_p_mauve, seed_weight_arg ,output_xmfa, output_tree, output_backbone, path_ref_gen, path_target_gen]
+        
+        #join with space to perform in subprocess.run
+        arg = ' '.join(l_arg)
+        
+        #run progressiveMauve with given parameters
+        subprocess.run([arg], shell=True)
+        
     return
+
 def main():
     
-    #check if file is given in input
-    if(len(sys.argv)!=6):
+    #if all 6 arguements are not given
+    if(len(sys.argv)!=7):
+        
         if len(sys.argv)==2:
+            
+            #print ^assistant to help to perform this script
             if sys.argv[1]=='--help' or sys.argv[1]=='--h':
-                print("You have to give the start and end of seed_weight testing values")
-                print("USAGE: ", sys.argv[0], '<start_sw>', '<end_sw>', '<ref_gen>' , '<target_gen>', '<path_output>')
+                
+                print("You have to give the start and end of seed_weight testing values\n")
+                print("USAGE: ", sys.argv[0], '<start_sw>', '<end_sw>', '<ref_gen>' , '<target_gen>', '<path_output>', '<path_progressive_mauve>\n')
+                print("start_sw : starting value of seed_weight to test")
+                print("end_sw : ending value of seed_weight to test")
+                print("ref_gen : path of reference genome")
+                print("target_gen : path of target genome")
+                print("path_output : path to save progressiveMauve results")
+                print("path_progressive_mauve : path of progressiveMauve")
+                
         else:
+            
             print("You have to give the start and end of seed_weight testing values")
-            print("USAGE: ", sys.argv[0], '<start_sw>', '<end_sw>', '<ref_gen>' , '<target_gen>', '<path_output>')
+            print("USAGE: ", sys.argv[0], '<start_sw>', '<end_sw>', '<ref_gen>' , '<target_gen>', '<path_output>', 'path_progressive_mauve')
+            print("USAGE: ", sys.argv[0], '--h to have arguments details')
+    
+    #all 6 arguemnts are given
     else:
         
-        #file_path
-        start = int(sys.argv[1])
-        end = int(sys.argv[2])
-        path_g1=sys.argv[3]
-        path_g2=sys.argv[4]
-        path_output=sys.argv[5]
-        s_w(start,end, path_g1, path_g2, path_output)
+        start, end, path_ref_gen, path_target_gen, path_output, path_p_mauve = sys.argv[1:]
+        
+        #run progressiveMauve
+        seed_weight_run(start,end, path_ref_gen, path_target_gen, path_output, path_p_mauve)
             
     return
 
