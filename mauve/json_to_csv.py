@@ -75,6 +75,8 @@ def extract_json(list_d):
             end = gen['end']            #position of last nt of the lcb
             length = end-start
             l_length.append(length)
+        
+        #only keep LCBs longer than 50bp 
         if CheckForMore(l_length, 50):
             #if len(l_lcb)==2 it means that the lcb is in both genome
             if len(l_lcb)==2:
@@ -136,6 +138,7 @@ def extract_json(list_d):
                         print(gen_data)
                     tab.loc[len(tab.index)] = gen_data
     
+    #only keep LCBs longer than 50bp 
     tab=tab.loc[tab['lcb_length'] >= 50]
     
     #sort our df by gen_index then by starting index of nt of each lcb
@@ -216,22 +219,13 @@ def sv(tab):
     
     idx = 0
     for lcb in range(len(l_nb_lcb)):
-        
-      #  print(lcb,idx,'lcb_idx')
-      #  print(l_self[idx],':self')
-      #  print(l_nb_lcb[lcb],'n_lcb')
+
         if l_self[idx]==l_nb_lcb[lcb]:
-            
-           # print(l_sv,'lcb=', lcb)
-            #print(idx,'index\n')
+
             idx+=1
         elif l_self[idx]!=l_nb_lcb[lcb]:
             index_change = l_nb_lcb[lcb]
-            #print('index_change: ',index_change)
-            
-            '''
-            
-            '''
+
             if lcb < len(l_nb_lcb)-1:
                 ide = lcb
                 if l_nb_lcb[lcb+1] > l_nb_lcb[lcb]:
@@ -277,30 +271,6 @@ def sv(tab):
     
     return tab
 
-
-'''
-#####################test###########################
-#file_path
-json_file = '/users/gev/kot/stage/mauve/seed_weight_test/N2_2013_CB4856_2021_sw_17.xmfa.json'
-#extract data to list of list of dico
-data = read_json(json_file)
-
-#data in df 
-df_data = extract_json(data)
-a = sv(df_data)
-#print(a)
-
-
-
-
-
-
-#df to file
-file_name = "/users/gev/kot/stage/mauve/seed_weight_test/test.csv"#json_file.split('.')[0] + '_summary_sorted.csv'
-df_data.to_csv(file_name)
-'''
-
-
 def main():
     
     #check if file is given in input
@@ -325,7 +295,7 @@ def main():
             
             #data in df 
             df_data = extract_json(data)
-            #print(df_data)
+
             #df to file
             file_name = json_file.split('.xmfa')[0] + '_summary_sorted_ref.csv'
             df_data.to_csv(file_name)

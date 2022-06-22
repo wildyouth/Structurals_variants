@@ -73,7 +73,7 @@ def seed_weight_run(start,end, path_ref_gen, path_target_gen, path_output, path_
 def main():
     
     #if all 6 arguements are not given
-    if(len(sys.argv)!=7):
+    if(len(sys.argv)!=6):
         
         if len(sys.argv)==2:
             
@@ -81,27 +81,28 @@ def main():
             if sys.argv[1]=='--help' or sys.argv[1]=='--h':
                 
                 print("You have to give the start and end of seed_weight testing values\n")
-                print("USAGE: ", sys.argv[0], '<start_sw>', '<end_sw>', '<ref_gen>' , '<target_gen>', '<path_output>', '<path_progressive_mauve>\n')
+                print("USAGE: ", sys.argv[0], '<start_sw>', '<end_sw>', '<ref_gen>' , '<target_gen>', '<path_output>\n')
                 print("start_sw : starting value of seed_weight to test")
                 print("end_sw : ending value of seed_weight to test")
                 print("ref_gen : path of reference genome")
                 print("target_gen : path of target genome")
                 print("path_output : path to save progressiveMauve results")
-                print("path_progressive_mauve : path of progressiveMauve")
                 
         else:
             
             print("You have to give the start and end of seed_weight testing values")
-            print("USAGE: ", sys.argv[0], '<start_sw>', '<end_sw>', '<ref_gen>' , '<target_gen>', '<path_output>', 'path_progressive_mauve')
+            print("USAGE: ", sys.argv[0], '<start_sw>', '<end_sw>', '<ref_gen>' , '<target_gen>', '<path_output>')
             print("USAGE: ", sys.argv[0], '--h to have arguments details')
     
     #all 6 arguemnts are given
     else:
+    
+        path_progressive_mauve = '/users/gev/kot/stage/mauve/mauve_snapshot_2015-02-13/linux-x64/progressiveMauve'
         
-        start, end, path_ref_gen, path_target_gen, path_output, path_p_mauve = sys.argv[1:]
+        start, end, path_ref_gen, path_target_gen, path_output = sys.argv[1:]
         
         #run progressiveMauve
-        seed_weight_run(start,end, path_ref_gen, path_target_gen, path_output, path_p_mauve)
+        seed_weight_run(start,end, path_ref_gen, path_target_gen, path_output, path_progressive_mauve)
             
     return
 
